@@ -17,3 +17,5 @@ java -jar ids-rule-discovery-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op positi
 
 
 java -jar ids-rule-discovery-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op positiveExamples -o /home/apc/Maastricht/rule-discovery/test-remzi.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:7200/repositories/test -pfx http://bio2rdf.org/pharmgkb_vocabulary:  -pr Chemical-Variant-association -pl 50
+
+java -jar ids-rule-discovery-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op positiveExamples -o /home/apc/Maastricht/rule-discovery/test-remzi.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:7200/repositories/test -pfx http://bio2rdf.org/pharmgkb_vocabulary:  -pr all -pl 50
