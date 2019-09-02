@@ -21,6 +21,15 @@ sudo docker run --name virtuoso.2.7.1 \
 # -pr: the name of the predicate (without the prefix) or "all" to select all predicates
 
 
+# To LOAD the quads into Virtuoso running docker run the following commands:
+
+docker exec -it virtuoso.2.7.1 bash
+
+isql-v -U dba -P dba
+
+ld_dir('dumps', 'statemenets.nq', 'https://w3id.org/data2services/graph/pharmgkb');
+
+rdf_loader_run();
 
 
 # Navigate to the path of the jar file inside the repository folder
