@@ -21,6 +21,12 @@ sudo docker run --name virtuoso.2.7.1 \
 # -pr: the name of the predicate (without the prefix) or "all" to select all predicates
 
 
+
+
+# Navigate to the path of the jar file inside the repository folder
+
+
+
 # the command here is to generate negative examples (100 by default) for a specifi predicate 
 java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op nex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr Chemical-Variant-association
 
