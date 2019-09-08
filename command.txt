@@ -67,3 +67,11 @@ java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op nex -o ${ABS_PATH}
 
 # the command here is to generate positive examples for all predicates with a limit of 50% of total predicates example for each predicate
 java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op pex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr all -l 0.5 -log ${ABS_PATH}/favlib/stats.log
+
+
+# to generate the embedding features
+ python src/RDF2Vec.py -dir data/rdf/drugbank/train/ -ext pos.nq -w embeddings/walks -kg embeddings/graph -m embeddings/models -v embeddings/vectors
+
+# train classifier and assign a truth value (probability) for each test fact
+python src/TrainingFactModel.py -neg data/rdf/drugbank/train/great_neg.nq -pos data/rdf/drugbank/train/great_pos.nq -emb embeddings/vectors/Entity2Vec_sg_200_5_5_15_2_500_d5_uniform.txt -test data/rdf/drugbank/test/test.nq -o data/output.txt -relmap embeddings/graph/relation2id.txt
+
