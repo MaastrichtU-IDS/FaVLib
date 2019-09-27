@@ -1,0 +1,14 @@
+working_directory: /juypter/
+dataset: pharmgkb
+
+vectors_file: Entity2Vec.txt
+
+operation_positive: pex
+operation_negative: nex
+sparql_endpoint: http://virtuoso.2.7.1:8890/sparql
+graph_base_uri: http://bio2rdf.org/pharmgkb_resource:bio2rdf.dataset.pharmgkb.R4
+predicate_uri_prefix: "http://bio2rdf.org/pharmgkb_vocabulary:"
+predicate: all
+limit: "100"
+
+

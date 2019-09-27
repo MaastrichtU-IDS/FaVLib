@@ -11,6 +11,8 @@ import gensim
 import shutil
 
 import findspark
+findspark.init("/usr/local/spark")
+
 from pyspark import SparkConf, SparkContext
 
 
@@ -67,7 +69,7 @@ def preprocess(folders, filename):
             else:
                 gzfile =open(os.path.join(dirname, fname))
 
-            for line in csv.reader(gzfile, delimiter='\t', quotechar='"'):
+            for line in csv.reader(gzfile, delimiter=' ', quotechar='"'):
                 #print (line)
                 h = line[0]
                 r = line[1]
@@ -97,6 +99,53 @@ def preprocess(folders, filename):
                     rid = relation2id[r]
                 addTriple(triples, hid, tid, rid)
             print ('Relation:',rel_counter, ' Entity:',ent_counter)
+    return entity2id,relation2id,triples
+
+
+def preprocess(file_path):
+    entity2id = {}
+    relation2id = {}
+    triples = {}
+
+    ent_counter = 0
+    rel_counter = 0
+   
+    print (file_path)
+    if file_path.endswith('.gz'):
+        file= gzip.open(file_path, mode='rt')
+    else:
+        file =open(file_path)
+
+    for line in csv.reader(file, delimiter='\t', quotechar='"'):
+        #print (line)
+        h = line[0]
+        r = line[1]
+        t = line[2]
+
+        #if not t.startswith('<'): continue
+
+        if h in entity2id:
+            hid = entity2id[h]
+        else:
+            entity2id[h] = ent_counter
+            ent_counter+=1
+            hid = entity2id[h]
+
+        if t in entity2id:
+            tid = entity2id[t]
+        else:
+            entity2id[t] = ent_counter
+            ent_counter+=1
+            tid = entity2id[t]
+
+        if r in relation2id:
+            rid = relation2id[r]
+        else:
+            relation2id[r] = rel_counter
+            rel_counter+=1
+            rid = relation2id[r]
+        addTriple(triples, hid, tid, rid)
+    print ('Relation:',rel_counter, ' Entity:',ent_counter)
     return entity2id,relation2id,triples
 
 
@@ -159,13 +208,11 @@ def extractFeatureVector(model, drugs, id2entity, output):
     fw.close()
 
 
-def trainModel(drugs, id2entity, datafilename, model_output, vector_output, pattern, maxDepth):
+def trainModel(drugs, id2entity, datafilename, model_output, vector_file, pattern, maxDepth):
     
     if not os.path.isdir(model_output):
         os.mkdir(model_output)
-        
-    if not os.path.isdir(vector_output):
-        os.mkdir(vector_output)
+
     
     output = os.path.join(model_output, pattern)
     if not os.path.isdir(output):
@@ -179,7 +226,7 @@ def trainModel(drugs, id2entity, datafilename, model_output, vector_output, patt
     modelname = 'Entity2Vec_sg_200_5_5_15_2_500'+'_d'+str(maxDepth)
     model1.save(os.path.join(output,modelname))
     
-    extractFeatureVector(model1, drugs, id2entity, os.path.join(vector_output,modelname+'_'+pattern+'.txt'))
+    extractFeatureVector(model1, drugs, id2entity, vector_file)
     del model1
 
 
@@ -210,21 +257,19 @@ class MySentences(object):
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-dir',required=True, dest='rdf_dir', nargs='+', help='enter folder path for rdf files')
-    parser.add_argument('-ext', required=False, dest='file_ext', help='enter file extension for rdf file (eg. nt, nq or nq.gz)')
+    parser.add_argument('-tr',required=True, dest='rdf_file', help='enter folder path for rdf file')
     parser.add_argument('-w',required=True, dest='walk_folder', help='enter folder path for walks (seqence) to be stored')
     parser.add_argument('-kg',required=True, dest='kg_folder', help='enter folder path for knowledge graphs (as encoded n{#} for entities and e{#} for relation n) to be saved in relation2id and entity2id ')
     parser.add_argument('-m',required=True, dest='model_folder', help='enter folder path for model file to be stored')
-    parser.add_argument('-v',required=True, dest='vector_folder', help='enter path for model file to be saved')
+    parser.add_argument('-v',required=True, dest='vector_file', help='enter path for model file to be saved')
 
     args = parser.parse_args()
 
-    rdf_folders = args.rdf_dir
-    fileext = args.file_ext
+    rdf_file= args.rdf_file
     walk_folder = args.walk_folder
     graph_folder = args.kg_folder
     model_folder = args.model_folder
-    vector_folder = args.vector_folder
+    vector_file = args.vector_file
 
 
 
@@ -243,7 +288,7 @@ if __name__=="__main__":
 
 
     #fileext = '.nq.gz'
-    entity2id, relation2id, triples = preprocess(rdf_folders, fileext)
+    entity2id, relation2id, triples = preprocess(rdf_file)
 
     num_triples=0
     for source in triples:
@@ -276,6 +321,7 @@ if __name__=="__main__":
 
 
     #dirname = './graph'
+    os.mkdir(graph_folder)
     saveData(entity2id, relation2id, triples, graph_folder)
 
     print (len(entities))
@@ -284,13 +330,9 @@ if __name__=="__main__":
     id2entity = { value:key for key,value in entity2id.items()} 
 
     #datafilename = './walks/'
-    #model_output = './models/'    
+    #model_output = './models/'  
+    os.mkdir(model_folder)
+
     pattern = 'uniform'
     #vector_output =  './vectors/'
-    trainModel(entities, id2entity, walk_folder, model_folder, vector_folder, pattern, maxDepth)
-
-
-
-
-
-
+    trainModel(entities, id2entity, walk_folder, model_folder, vector_file, pattern, maxDepth)

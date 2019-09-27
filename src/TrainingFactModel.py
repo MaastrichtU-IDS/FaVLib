@@ -22,6 +22,7 @@ import networkx as nx
 import random
 import numbers
 import argparse
+import os
 
 def predict(X_new,  model):
 
@@ -98,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument('-pos', required=True, dest='positive', help="enter postive example file")
     parser.add_argument('-neg', required=True, dest='negative', help="enter negative exmaple file")
     parser.add_argument('-emb', required=True, dest='embeddings', help="enter embedding file")
-    parser.add_argument('-relmap', required=True, dest='relmapping',help="enter relation mapping file")
+    parser.add_argument('-relmap', required=True, dest='relmapping',help="enter folder that contains relation mapping file (relation2id.txt)")
     parser.add_argument('-test', required=True, dest='test', help="enter test fact file")
     parser.add_argument('-o', required=True, dest='output', help="enter file name for prediction output")
     
@@ -107,10 +108,11 @@ if __name__ == "__main__":
     train_pos_file = args.positive
     train_neg_file = args.negative
     emb_file = args.embeddings
-    relmap_file = args.relmapping
+    relmap_folder = args.relmapping
     test_file = args.test
     output_file = args.output
 
+    print ("Training file",train_pos_file)
     pos_df =pd.read_csv(train_pos_file, names=['Entity1','Relation','Entity2','X'], sep='\t', header=None)
     print (pos_df.head())
 
@@ -137,6 +139,7 @@ if __name__ == "__main__":
     train_df.drop(columns=['Entity_x','Entity_y'], inplace=True)
     
     mapping = {}
+    relmap_file  = os.path.join(relmap_folder, 'relation2id.txt')
     with open(relmap_file, 'r') as rmap:
         next(rmap)
         for line in rmap:
@@ -191,7 +194,4 @@ if __name__ == "__main__":
     test_df.Relation = test_df.Relation.replace(id2relation)
 
     test_df[['Entity1','Relation','Entity2','TruthValue']].to_csv(output_file, index=False)
-
-
-
 
