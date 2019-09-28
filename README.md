@@ -36,6 +36,6 @@ docker-compose up -d --build --force-recreate virtuoso.2.7.1 favlib
 
 ## Run the command
 
-sudo docker-compose exec favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow.cwl workflow/workflow-job.yml
+docker-compose exec favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow.cwl workflow/workflow-job.yml
 
 ## That's it!!
