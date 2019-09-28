@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+
+  virtuoso.2.7.1:
+    image: tenforce/virtuoso:1.3.2-virtuoso7.2.1
+    restart: unless-stopped
+    volumes:
+      - ${ABS_PATH}/bio2rdf-github/virtuoso:/data
+    ports:
+      - 8890:8890
+      - 1111:1111
+    environment:
+      - DBA_PASSWORD=dba
+      - SPARQL_UPDATE=true
+      - DEFAULT_GRAPH=https://w3id.org/data2services/graph
+      - ABS_PATH
+    networks:
+      - d2s-network
+
+  favlib:
+    image: aammar/favlib
+    environment:
+      - ABS_PATH
+    volumes:
+      - ${ABS_PATH}/favlib:/jupyter
+      - /tmp:/tmp
+    ports:
+      - 8888:8888
+    networks:
+      - d2s-network
+
+networks:
+  d2s-network:
+    driver: bridge

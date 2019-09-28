@@ -3,7 +3,7 @@ export ABS_PATH=/media/apc/DATA1/Maastricht
 
 # run this command to run Virtuoso, it will also install it if it is not there
 
-sudo docker run --name virtuoso.2.7.1 \
+sudo docker run --rm --name virtuoso.2.7.1 \
     -p 8890:8890 -p 1111:1111 \
     -e DBA_PASSWORD=dba \
     -e SPARQL_UPDATE=true \
@@ -49,15 +49,12 @@ java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op nex -o ${ABS_PATH}
 java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op nex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr all -log ${ABS_PATH}/favlib/stats.log
 
 
-
-
 # the command here is to generate negative examples for all predicates with a limit of 1000 example for each predicate
 java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op nex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr all -l 1000 -log ${ABS_PATH}/favlib/stats.log
 
 
 # the command here is to generate positive examples for all predicates with a limit of 1000 example for each predicate
-java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op pex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr all -l 1000 -log ${ABS_PATH}/favlib/stats.log
-
+java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op pex -o ${ABS_PATH}/favlib/great.nq -gr https://w3id.org/data2services/graph/pharmgkb -e http://localhost:8890/sparql -pfx http://bio2rdf.org/pharmgkb_vocabulary: -pr all -l 100 -log ${ABS_PATH}/favlib/stats.log
 
 
 
@@ -70,8 +67,76 @@ java -jar favlib-0.0.1-SNAPSHOT-jar-with-dependencies.jar -op pex -o ${ABS_PATH}
 
 
 # to generate the embedding features
- python src/RDF2Vec.py -dir data/rdf/drugbank/train/ -ext pos.nq -w embeddings/walks -kg embeddings/graph -m embeddings/models -v embeddings/vectors
+python src/RDF2Vec.py -dir data/rdf/drugbank/train/ -ext great_pos.nq -w embeddings/walks -kg embeddings/graph -m embeddings/models -v embeddings/vectors
 
 # train classifier and assign a truth value (probability) for each test fact
-python src/TrainingFactModel.py -neg data/rdf/drugbank/train/great_neg.nq -pos data/rdf/drugbank/train/great_pos.nq -emb embeddings/vectors/Entity2Vec_sg_200_5_5_15_2_500_d5_uniform.txt -test data/rdf/drugbank/test/test.nq -o data/output.txt -relmap embeddings/graph/relation2id.txt
+python src/TrainingFactModel.py -neg /jupyter/data/rdf/pharmgkb/train/great_neg.nq -pos /jupyter/data/rdf/pharmgkb/train/great_pos.nq -emb /jupyter/embeddings/vectors/Entity2Vec_sg_200_5_5_15_2_500_d5_uniform.txt -test /jupyter/data/rdf/pharmgkb/test/great_neg.nq -o /jupyter/data/output.txt -relmap /jupyter/embeddings/graph/relation2id.txt
+
+
+
+sudo docker build -t favlib-embeddings .
+sudo docker build -t favlib-exmgen .
+
+
+sudo docker exec -it favlib-embeddings python src/RDF2Vec.py //test
+
+sudo docker run -d --rm --name favlib -p 8888:8888 -v /media/apc/DATA1/Maastricht/favlib:/jupyter favlib
+
+------------------------------
+
+sudo docker-compose up -d --build --force-recreate virtuoso.2.7.1 favlib
+
+sudo docker-compose exec favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow.cwl workflow/workflow-job.yml
+
+
+
+
+sudo docker build -t favlib .
+
+sudo docker run -d --rm --link virtuoso.2.7.1:virtuoso.2.7.1 --name favlib -p 8888:8888 -v /media/apc/DATA1/Maastricht/favlib:/jupyter -v /tmp:/tmp favlib
+
+sudo docker exec -it favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow.cwl workflow/workflow-job.yml
+
+------------------------------
+
+sudo docker run -d --rm --name favlib-embeddings -p 8888:8888 -v /media/apc/DATA1/Maastricht/favlib:/jupyter -v /tmp:/tmp favlib-embeddings
+
+
+sudo docker exec -it favlib python src/RDF2Vec.py -dir /jupyter/data/rdf/pharmgkb/complete/ -ext statements.nq -w /jupyter/embeddings/walks -kg /jupyter/embeddings/graph -m /jupyter/embeddings/models -v /jupyter/embeddings/vectors/${param}
+
+
+sudo docker exec -it favlib python src/TrainingFactModel.py -neg /jupyter/data/rdf/pharmgkb/train/great_neg.nq -pos /jupyter/data/rdf/pharmgkb/train/great_pos.nq -emb /jupyter/embeddings/vectors/Entity2Vec_sg_200_5_5_15_2_500_d5_uniform.txt -test /jupyter/data/rdf/pharmgkb/test/great_neg.nq -o /jupyter/data/output.txt -relmap /jupyter/embeddings/graph
+
+
+
+
+# Please define the dataset folder name
+export DATASET=pharmgkb
+
+
+sudo cwl-runner --outdir ${ABS_PATH}/favlib/output main-workflow.cwl workflow-job.yml
+
+
+
+#--------------- Query example------------------------
+
+select ?type (count(?sub) AS ?count) from <https://w3id.org/data2services/graph/pharmgkb> where {?sub <http://bio2rdf.org/pharmgkb_vocabulary:Disease-Gene-association> ?obj. ?sub <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.} GROUP BY ?type ORDER BY DESC(?count)
+
+
+
+select ?type (count(?obj) AS ?count) from <https://w3id.org/data2services/graph/pharmgkb> where {?sub <http://bio2rdf.org/pharmgkb_vocabulary:Disease-Gene-association> ?obj. ?obj <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.} GROUP BY ?type ORDER BY DESC(?count)
+
+
+
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?subject ?object
+FROM <https://w3id.org/data2services/graph/pharmgkb>
+WHERE
+  { 
+    ?object   rdf:type  <null> .
+    ?subject  rdf:type  <http://bio2rdf.org/pharmgkb_vocabulary:Resource> .
+    ?subject  <http://bio2rdf.org/pharmgkb_vocabulary:Disease-Gene-association>  ?object
+  }
+LIMIT 0
 
