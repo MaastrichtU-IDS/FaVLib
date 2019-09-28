@@ -17,7 +17,7 @@ sudo docker run -d --rm --link virtuoso.2.7.1:virtuoso.2.7.1 --name favlib -p 88
 
 sudo docker exec -it favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow.cwl workflow/workflow-job.yml
 
-# Docker Compose Support
+# Docker Compose Support (First make sure Docker-Compose is installed!!)
 
 ## Clone the current repository
 git clone https://github.com/MaastrichtU-IDS/FaVLib.git
