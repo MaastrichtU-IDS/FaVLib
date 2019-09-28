@@ -6,7 +6,7 @@ services:
     image: tenforce/virtuoso:1.3.2-virtuoso7.2.1
     restart: unless-stopped
     volumes:
-      - ${ABS_PATH}/bio2rdf-github/virtuoso:/data
+      - ${ABS_PATH}/virtuoso:/data
     ports:
       - 8890:8890
       - 1111:1111
