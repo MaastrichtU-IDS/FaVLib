@@ -26,7 +26,7 @@ git clone https://github.com/MaastrichtU-IDS/FaVLib.git
 
 cd FavLib
 
-## Edit the file .end to set the path absolute path of the folder that you want virtuoso to map to, from there you will upload the files to virtuoso
+## Edit the file .env to set the path of the folder that you want virtuoso to map to, from there you will upload the files to virtuoso. Also you will set the output folder of the workflow
 
 cat .env
 
