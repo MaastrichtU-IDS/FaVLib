@@ -19,7 +19,7 @@ services:
       - d2s-network
 
   favlib:
-    image: maastrichtuids/favlib
+    image: umids/favlib
     environment:
       - ABS_PATH
     volumes:
