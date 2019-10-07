@@ -7,6 +7,8 @@ services:
     restart: unless-stopped
     volumes:
       - ${VIRTUOSO_PATH}:/data
+      - 'myshare:/shared'
+      - "./load.sh:/shared/load.sh"
     ports:
       - 8890:8890
       - 1111:1111
@@ -19,16 +21,22 @@ services:
       - d2s-network
 
   favlib:
-    image: maastrichtuids/favlib
+  image: maastrichtuids/favlib
     environment:
       - ABS_PATH
     volumes:
-      - ${OUTPUT_PATH}:/jupyter
+      - ${ABS_PATH}:/jupyter
+      - ${OUTPUT_PATH}:/home/jovyan
+      - 'myshare:/shared'
       - /tmp:/tmp
     ports:
       - 8888:8888
     networks:
       - d2s-network
+
+volumes:
+  myshare:
+    driver: local
 
 networks:
   d2s-network:
