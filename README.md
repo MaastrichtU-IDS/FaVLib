@@ -36,7 +36,7 @@ docker-compose up -d --build --force-recreate virtuoso.2.7.1 favlib
 
 ## Load the data (eg put  your data (named "rdf_output.nq") into ${VIRTUOSO_PATH}/dumps directory )
 
-docker exec -it favlib_virtuoso.2.7.1_1 bash -c "cd /shared && ./load.sh ./dumps rdf_output.nq http://test-vad vload.log dba"
+docker exec -it favlibdocker_virtuoso.2.7.1_1 bash -c "cd /shared && ./load.sh ./dumps statements_train.nq http://test-vad vload.log dba"
 
 ## Run the command
 

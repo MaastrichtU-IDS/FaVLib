@@ -11,7 +11,7 @@ inputs:
   working_directory: string 
   dataset: string
   vectors_file: string
-
+  test_set: string
   operation_positive: string
   operation_negative: string
   sparql_endpoint: string
@@ -95,5 +95,6 @@ steps:
       negative_examples: step1_2-generate-negative-examples/examples_file_output
       vectors_file: step2-generate-embeddings/vector_output
       graph_folder: step2-generate-embeddings/graph_output 
+      test_set: test_set
     out: [classifier_output]
 

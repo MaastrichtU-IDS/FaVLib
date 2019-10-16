@@ -9,7 +9,7 @@ baseCommand: [python]
 
 arguments: [ "$(inputs.working_directory)src/TrainingFactModel.py" , "-neg", "$(inputs.negative_examples)", 
 "-pos", "$(inputs.positive_examples)", 
-"-emb", "$(inputs.vectors_file)", "-relmap", "$(inputs.graph_folder)", "-o", "output.txt", "-test", "$(inputs.negative_examples)"]
+"-emb", "$(inputs.vectors_file)", "-relmap", "$(inputs.graph_folder)", "-o", "output.txt", "-test", "$(inputs.test_set)"]
 
 inputs:
   
@@ -23,6 +23,8 @@ inputs:
     type: File
   graph_folder:
      type: Directory
+  test_set: 
+     type: string
 
 outputs:
   
