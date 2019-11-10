@@ -1,44 +1,47 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
 class: CommandLineTool
-
-label: Fact validation library. A step to generate embeddings, Ammar Ammar <ammar257ammar@gmail.com> 
-
-baseCommand: [python]
-
-arguments: [ "$(inputs.working_directory)src/RDF2Vec.py" , "-tr", "$(inputs.training_file)",  "-w", "walks", "-kg", "graph", "-m", "models", "-v", "$(inputs.vectors_file)"]
-
+cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
+baseCommand:
+  - python3
 inputs:
-  
-  working_directory:
+  - id: dataset
     type: string
-  dataset:
-    type: string
-  training_file:
-    type: File
-  vectors_file:
-    type: string
-
-outputs:
-  
-  walks_output:
+  - id: training_file
     type: Directory
-    outputBinding:
-      glob: walks
-
-  graph_output:
+  - id: vectors_file
+    type: string
+  - id: working_directory
+    type: string
+outputs:
+  - id: graph_output
     type: Directory
     outputBinding:
       glob: graph
-
-  model_output:
+  - id: model_output
     type: Directory
     outputBinding:
       glob: models
-
-  vector_output:
+  - id: vector_output
     type: File
     outputBinding:
       glob: $(inputs.vectors_file)
-
+  - id: walks_output
+    type: Directory
+    outputBinding:
+      glob: walks
+label: Generate RDF2Vec embeddings
+arguments:
+  - $(inputs.working_directory)src/RDF2Vec.py
+  - '-tr'
+  - $(inputs.training_file.path)/train.txt
+  - '-w'
+  - walks
+  - '-kg'
+  - graph
+  - '-m'
+  - models
+  - '-v'
+  - $(inputs.vectors_file)
+requirements:
+  - class: InlineJavascriptRequirement

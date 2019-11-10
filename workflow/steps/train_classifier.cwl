@@ -7,29 +7,29 @@ label: Fact validation library. A step to generate embeddings, Ammar Ammar <amma
 
 baseCommand: [python]
 
-arguments: [ "$(inputs.working_directory)src/TrainingFactModel.py" , "-neg", "$(inputs.negative_examples)", 
-"-pos", "$(inputs.positive_examples)", 
-"-emb", "$(inputs.vectors_file)", "-relmap", "$(inputs.graph_folder)", "-o", "output.txt", "-test", "$(inputs.test_set)"]
+arguments: [ "$(inputs.working_directory)src/TrainingFactModel.py",
+"-train", "$(inputs.train_examples_dir.path)/train.txt",  "-test", "$(inputs.train_examples_dir.path)/test.txt",
+"-emb", "$(inputs.vectors_file)", "-relmap", "$(inputs.graph_folder)", "-otrain", "train_output.csv", "-otest", "test_output.csv"]
 
 inputs:
   
   working_directory:
     type: string
-  positive_examples:
-    type: File
-  negative_examples:
-    type: File
+  train_examples_dir:
+    type: Directory
   vectors_file:
     type: File
   graph_folder:
      type: Directory
-  test_set: 
-     type: string
 
 outputs:
   
-  classifier_output:
+  classifier_train_output:
     type: File
     outputBinding:
-      glob: output.txt
+      glob: train_output.csv
+  classifier_test_output:
+    type: File
+    outputBinding:
+      glob: test_output.csv
 

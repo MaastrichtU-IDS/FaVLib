@@ -96,35 +96,28 @@ def multimetric_score(estimator, X_test, y_test, scorers):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-pos', required=True, dest='positive', help="enter postive example file")
-    parser.add_argument('-neg', required=True, dest='negative', help="enter negative exmaple file")
+    parser.add_argument('-train', required=True, dest='train', help="enter train examples file")
+    #parser.add_argument('-pos', required=True, dest='positive', help="enter postive example file")
+    #parser.add_argument('-neg', required=True, dest='negative', help="enter negative exmaple file")
     parser.add_argument('-emb', required=True, dest='embeddings', help="enter embedding file")
     parser.add_argument('-relmap', required=True, dest='relmapping',help="enter folder that contains relation mapping file (relation2id.txt)")
     parser.add_argument('-test', required=True, dest='test', help="enter test fact file")
-    parser.add_argument('-o', required=True, dest='output', help="enter file name for prediction output")
+    parser.add_argument('-otest', required=True, dest='train_output', help="enter file name for prediction output")
+    parser.add_argument('-otrain', required=True, dest='test_output', help="enter file name for prediction output")
     
     args = parser.parse_args()
     
-    train_pos_file = args.positive
-    train_neg_file = args.negative
+    #train_pos_file = args.positive
+    #train_neg_file = args.negative
+    train_file = args.train
     emb_file = args.embeddings
     relmap_folder = args.relmapping
     test_file = args.test
-    output_file = args.output
+    train_output = args.train_output
+    test_output = args.test_output
 
-    print ("Training file",train_pos_file)
-    pos_df =pd.read_csv(train_pos_file, names=['Entity1','Relation','Entity2','X'], sep='\t', header=None)
-    print (pos_df.head())
-
-    neg_df =pd.read_csv(train_neg_file, names=['Entity1','Relation','Entity2','X'], sep='\t', header=None)
-    print (neg_df.head())
-
-    pos_df['Class'] = 1
-    neg_df['Class'] = 0 
-    train_df = pos_df.append(neg_df,ignore_index=True) 
-    train_df.head()
-
-    train_df.drop(columns=['X'], inplace=True)
+    print ("Training file",train_file)
+    train_df =pd.read_csv(train_file, names=['Entity1','Relation','Entity2','Class'], sep='\t', header=None)
 
     emb_df = pd.read_csv(emb_file, delimiter='\t') 
 
@@ -147,11 +140,6 @@ if __name__ == "__main__":
             mapping[line[0]]= int(line[1])
     
 
-    #mapping = {'<http://dice-research.org/ontology/drugbank/hasCommonProducer>': 0,
-    # '<http://dice-research.org/ontology/drugbank/hasIndication>': 1,
-    # '<http://dice-research.org/ontology/drugbank/interactsWith>': 2,
-    # '<http://dice-research.org/ontology/drugbank/hasSameState>': 3,
-    # '<http://dice-research.org/ontology/drugbank/hasCommonIndication>': 4}
     train_df.Relation = train_df.Relation.replace(mapping)
     print (train_df.head())
 
@@ -159,39 +147,34 @@ if __name__ == "__main__":
     X=train_df[features_cols].values
     y=train_df['Class'].values.ravel()
 
-    
-    skf = StratifiedKFold(n_splits=5)
-    skf.get_n_splits(X, y)
-    rf_score_df = pd.DataFrame()
-    for train_index, test_index in skf.split(X,y):
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
-        rf_model = ensemble.RandomForestClassifier(n_estimators=200, n_jobs=10)
-        rf_model.fit(X_train, y_train)
-        rf_scores = get_scores(rf_model, X_test, y_test)
-        rf_score_df = rf_score_df.append(rf_scores, ignore_index=True)
-        print (rf_scores)
 
 
-    test_df =pd.read_csv(test_file, names=['Entity1','Relation','Entity2','X'], sep='\t', header=None)
-    test_df.head()
+    test_df =pd.read_csv(test_file, names=['Entity1','Relation','Entity2','Class'], sep='\t', header=None)
     
     test_df = test_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 
     test_df.drop(columns=['Entity_x','Entity_y'],inplace=True)
+    
+    print (test_df.head())
+    print ("number of positives in test",(len(test_df[test_df['Class']==1])))
+    print ("number of neegatives in test",(len(test_df[test_df['Class']!=1])))
 
     test_df.Relation = test_df.Relation.replace(mapping)
-    rf_model = ensemble.RandomForestClassifier(n_estimators=200, n_jobs=10)
+    rf_model = ensemble.RandomForestClassifier(n_estimators=100, n_jobs=10)
     rf_model.fit(X,y)
     X_new=test_df[features_cols].values
-
-    probs = rf_model.predict_proba(X_new)
-
-    test_df['TruthValue'] =  probs[:,1]
-
+    
+    rf_scores = get_scores(rf_model, X_new, test_df['Class'])
+    print (rf_scores)
+   
     id2relation = { value:key for key,value in mapping.items()} 
 
     test_df.Relation = test_df.Relation.replace(id2relation)
-
-    test_df[['Entity1','Relation','Entity2','TruthValue']].to_csv(output_file, index=False)
+    
+    train_df.to_csv(train_output, index=False)
+    test_df.to_csv(test_output, index=False)
+    
+    #probs = rf_model.predict_proba(X_new)
+    #test_df['TruthValue'] =  probs[:,1]
+    #test_df[['Entity1','Relation','Entity2','TruthValue']].to_csv(output_file, index=False)
 

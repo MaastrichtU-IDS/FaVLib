@@ -1,10 +1,10 @@
 FROM jupyter/pyspark-notebook
 USER root
 
-WORKDIR /juypter
-COPY . ./
+WORKDIR /jupyter
+COPY requirements.txt ./
 
-RUN chown -R jovyan /juypter && \
+RUN chown -R jovyan /jupyter && \
     chmod -R 777 ./
 
 RUN apt-get update && apt-get install -y \
@@ -18,4 +18,3 @@ RUN pip install --upgrade pip && \
   pip3 install -r requirements.txt
 
 
-#RUN conda install -c bioconda cwltool
