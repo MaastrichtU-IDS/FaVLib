@@ -34,7 +34,7 @@ label: Generate RDF2Vec embeddings
 arguments:
   - $(inputs.working_directory)src/RDF2Vec.py
   - '-tr'
-  - $(inputs.training_file.path)/train.txt
+  - $(inputs.training_file.path)/train_positives.txt
   - '-w'
   - walks
   - '-kg'
