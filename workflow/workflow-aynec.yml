@@ -2,11 +2,12 @@ working_directory: /jupyter/
 
 vectors_file: Entity2Vec.txt
 
-inputFile:  /jupyter/data/input/WN11.txt
+inputFile:  /jupyter/data/input/WN11_small.txt
 outFolder: WN11-dataset 
 propNegatives: 1
-negStrategy: 'change_source_random'
-fractionTest: 0.5
+minNumRel: 5
+negStrategy: 'change_source'
+fractionTest: 0.2
 
 
 

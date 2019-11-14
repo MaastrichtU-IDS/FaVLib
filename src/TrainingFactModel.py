@@ -118,6 +118,7 @@ if __name__ == "__main__":
 
     print ("Training file",train_file)
     train_df =pd.read_csv(train_file, names=['Entity1','Relation','Entity2','Class'], sep='\t', header=None)
+    print ("number of train samples",len(train_df))
 
     emb_df = pd.read_csv(emb_file, delimiter='\t') 
 
@@ -130,6 +131,8 @@ if __name__ == "__main__":
     train_df = train_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 
     train_df.drop(columns=['Entity_x','Entity_y'], inplace=True)
+    print ("number of positives in train",(len(train_df[train_df['Class']==1])))
+    print ("number of neegatives in train",(len(train_df[train_df['Class']!=1])))
     
     mapping = {}
     relmap_file  = os.path.join(relmap_folder, 'relation2id.txt')
@@ -150,6 +153,7 @@ if __name__ == "__main__":
 
 
     test_df =pd.read_csv(test_file, names=['Entity1','Relation','Entity2','Class'], sep='\t', header=None)
+    print ("number of test samples",len(test_df))
     
     test_df = test_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 

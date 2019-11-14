@@ -8,69 +8,79 @@ $namespaces:
 inputs:
   - id: vectors_file
     type: string
-    'sbg:x': -33.420528411865234
-    'sbg:y': -37.822296142578125
+    'sbg:x': 0
+    'sbg:y': 106.71875
   - id: working_directory
     type: string
-    'sbg:x': -51.987491607666016
-    'sbg:y': -828.0864868164062
+    'sbg:x': -57.34417724609375
+    'sbg:y': -52.35772705078125
   - id: inputFile
     type: string
-    'sbg:x': 60.01408386230469
-    'sbg:y': 806.6358032226562
+    'sbg:x': 0
+    'sbg:y': 426.90625
   - id: propNegatives
     type: float
-    'sbg:x': -33.420528411865234
-    'sbg:y': -601.5695190429688
+    'sbg:x': -219.9027557373047
+    'sbg:y': 173.48622131347656
   - id: negStrategy
     type: string
-    'sbg:x': -22.280353546142578
-    'sbg:y': -341.632080078125
+    'sbg:x': -199.2707977294922
+    'sbg:y': 333.7439270019531
   - id: outFolder
     type: string
-    'sbg:x': -40.55130386352539
-    'sbg:y': 353.65472412109375
+    'sbg:x': 443.9027099609375
+    'sbg:y': 255.72747802734375
   - id: fractionTest
     type: float?
-    'sbg:x': 56.557437896728516
-    'sbg:y': 982.427978515625
+    'sbg:x': 0
+    'sbg:y': 533.59375
+  - id: minNumRel
+    type: int
+    'sbg:x': -237.071044921875
+    'sbg:y': 482.778564453125
 outputs:
   - id: graph_output
     outputSource:
       - step2-generate-embeddings/graph_output
     type: Directory
-    'sbg:x': 1550.4691162109375
-    'sbg:y': -114.77040100097656
+    'sbg:x': 1536.3916015625
+    'sbg:y': 703.1699829101562
   - id: model_output
     outputSource:
       - step2-generate-embeddings/model_output
     type: Directory
-    'sbg:x': 1554.63232421875
-    'sbg:y': 42.59519577026367
+    'sbg:x': 1496.5
+    'sbg:y': 394.5
   - id: vector_output
     outputSource:
       - step2-generate-embeddings/vector_output
     type: File
-    'sbg:x': 1513.765625
-    'sbg:y': 293
+    'sbg:x': 1496.5
+    'sbg:y': 139.0625
   - id: walks_output
     outputSource:
       - step2-generate-embeddings/walks_output
     type: Directory
-    'sbg:x': 1513.765625
-    'sbg:y': 186
+    'sbg:x': 1496.5
+    'sbg:y': 32.375
   - id: classifier_train_output
     outputSource:
       - step3-train-classifier/classifier_train_output
     type: File
-    'sbg:x': 1926.9561767578125
-    'sbg:y': 448.9598388671875
+    'sbg:x': 1513.75048828125
+    'sbg:y': 273.30615234375
   - id: classifier_test_output
     outputSource:
       - step3-train-classifier/classifier_test_output
     type: File
-    'sbg:x': 1912.19091796875
-    'sbg:y': 756.921142578125
+    'sbg:x': 1511.2572021484375
+    'sbg:y': 547.0397338867188
+  - id: examples_file_output
+    outputSource:
+      - generate_examples_aynec/examples_file_output
+    type: Directory
+    'sbg:x': 1484.813232421875
+    'sbg:y': 897.3413696289062
 steps:
   - id: step2-generate-embeddings
     in:
@@ -91,8 +101,8 @@ steps:
     label: >-
       Fact validation library. A step to generate embeddings, Ammar Ammar
       <ammar257ammar@gmail.com>
-    'sbg:x': 1041.1361083984375
-    'sbg:y': 179.1442413330078
+    'sbg:x': 559.24951171875
+    'sbg:y': -35.95317840576172
   - id: step3-train-classifier
     in:
       - id: graph_folder
@@ -110,8 +120,8 @@ steps:
     label: >-
       Fact validation library. A step to generate embeddings, Ammar Ammar
       <ammar257ammar@gmail.com>
-    'sbg:x': 1322.24755859375
-    'sbg:y': 797.0128173828125
+    'sbg:x': 751.0256958007812
+    'sbg:y': 299.19317626953125
   - id: generate_examples_aynec
     in:
       - id: inputFile
@@ -126,6 +136,7 @@ steps:
         source: working_directory
       - id: minNumRel
         default: 50
+        source: minNumRel
       - id: fractionTest
         source: fractionTest
     out:
@@ -134,6 +145,6 @@ steps:
     label: >-
       Fact validation library. A step to generate negative and positive
       examples, Ammar Ammar <ammar257ammar@gmail.com>
-    'sbg:x': 665.6767578125
-    'sbg:y': 821.9795532226562
+    'sbg:x': 193.58506774902344
+    'sbg:y': 320.15625
 requirements: []
