@@ -81,6 +81,12 @@ outputs:
     type: Directory
     'sbg:x': 1484.813232421875
     'sbg:y': 897.3413696289062
+  - id: results
+    outputSource:
+      - step3-train-classifier/results
+    type: File?
+    'sbg:x': 1488.8759765625
+    'sbg:y': -94.5193862915039
 steps:
   - id: step2-generate-embeddings
     in:
@@ -116,6 +122,7 @@ steps:
     out:
       - id: classifier_test_output
       - id: classifier_train_output
+      - id: results
     run: steps/train_classifier.cwl
     label: >-
       Fact validation library. A step to generate embeddings, Ammar Ammar

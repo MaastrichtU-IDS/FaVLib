@@ -164,12 +164,12 @@ if __name__ == "__main__":
     print ("number of neegatives in test",(len(test_df[test_df['Class']!=1])))
 
     test_df.Relation = test_df.Relation.replace(mapping)
-    rf_model = ensemble.RandomForestClassifier(n_estimators=100, n_jobs=10)
-    rf_model.fit(X,y)
+    #rf_model = ensemble.RandomForestClassifier(n_estimators=100, n_jobs=10)
+    #rf_model.fit(X,y)
     X_new=test_df[features_cols].values
     
-    rf_scores = get_scores(rf_model, X_new, test_df['Class'])
-    print (rf_scores)
+    #rf_scores = get_scores(rf_model, X_new, test_df['Class'])
+    #print (rf_scores)
    
     id2relation = { value:key for key,value in mapping.items()} 
 
@@ -177,7 +177,24 @@ if __name__ == "__main__":
     
     train_df.to_csv(train_output, index=False)
     test_df.to_csv(test_output, index=False)
+
+    results = pd.DataFrame()
+
+    nb_model = GaussianNB()
+    lr_model = linear_model.LogisticRegression()
+    rf_model = ensemble.RandomForestClassifier(n_estimators=200, max_depth=8, n_jobs=-1)
+
+    clfs = [('Naive Bayes',nb_model),('Logistic Regression',lr_model),('Random Forest',rf_model)]
+    for name, clf in clfs:
+
+            clf.fit(X, y)
+            scores = get_scores(clf, X_new, test_df['Class'])
+            scores['method'] = name
+            results = results.append(scores, ignore_index=True)
     
+
+    print (results)
+    results.to_csv('results.csv',index=False)
     #probs = rf_model.predict_proba(X_new)
     #test_df['TruthValue'] =  probs[:,1]
     #test_df[['Entity1','Relation','Entity2','TruthValue']].to_csv(output_file, index=False)
