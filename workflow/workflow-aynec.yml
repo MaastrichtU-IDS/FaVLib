@@ -7,7 +7,7 @@ outFolder: WN11-dataset
 propNegatives: 1
 minNumRel: 5
 negStrategy: 'change_source'
-fractionTest: 0.2
+fractionTest: 0.5
 
 
 
