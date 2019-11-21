@@ -26,8 +26,8 @@ spec:
           - "/data/output-data/"
           - "--usage-report"
           - "/data/output-data/usage.json"
-          - "/data/FaVLib/workflow/main-workflow.cwl"
-          - "/data/FaVLib/workflow/workflow-job.yml"
+          - "/data/FaVLib/workflow/main-workflow-aynec.cwl"
+          - "/data/FaVLib/workflow/workflow-aynec.yml"
         volumeMounts:
         - mountPath: /data
           name: pv-test-vincent
