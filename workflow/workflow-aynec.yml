@@ -2,7 +2,7 @@ working_directory: /jupyter/
 
 vectors_file: Entity2Vec.txt
 
-inputFile:  /jupyter/data/input/WN11_small.txt
+inputFile:  /jupyter/data/input/WN11.txt
 outFolder: WN11-dataset 
 propNegatives: 1
 minNumRel: 5
