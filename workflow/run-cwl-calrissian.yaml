@@ -11,7 +11,8 @@ spec:
         image: dukegcb/calrissian:latest
         command: ["calrissian"]
         args:
-          - "--no-container"
+          - "--default-container"
+          - "docker"
           - "--stdout"
           - "/data/output-data/output.json"
           - "--stderr"
