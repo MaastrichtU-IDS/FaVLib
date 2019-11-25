@@ -773,7 +773,7 @@ def main():
 	print(OUTPUT_FOLDER)
 
 	# We read and preprocess the graph
-	if(INPUT_FORMAT == "nt"):
+	if(INPUT_FILE.endswith("nt")):
 		reader = NTriplesReader(INPUT_FILE, GRAPH_FRACTION, INCLUDE_DATA_PROP)
 	elif(INPUT_FORMAT in ["rdfa", "nt", "n3", "xml", "trix"]):
 		reader = LinkedDataReader(INPUT_FILE, GRAPH_FRACTION, INCLUDE_DATA_PROP, INPUT_FORMAT)
@@ -793,8 +793,8 @@ def main():
 		generator.generate_negatives(0, "train", NUMBER_NEGATIVES, NEGATIVES_STRATEGY, True, False)
 	# We export the files
 	generator.export_files(0, True, INCLUDE_DATA_PROP, SEPARATE_TYPES)
-	if(EXPORT_GEXF):
-		generator.export_gexf(0, True, True, True, True)
+	#if(EXPORT_GEXF):
+	#	generator.export_gexf(0, True, True, True, True)
 
 if __name__ == '__main__':
 	main()
