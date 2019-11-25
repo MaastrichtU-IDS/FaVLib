@@ -126,7 +126,6 @@ if __name__ == "__main__":
     orgs = orgs.union(train_df.Entity2.unique())
     orgs = orgs.intersection(emb_df.Entity.unique())
 
-    print (len(orgs))
 
     train_df = train_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 
