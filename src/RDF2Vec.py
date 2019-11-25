@@ -219,7 +219,7 @@ def trainModel(drugs, id2entity, datafilename, model_output, vector_file, patter
         os.mkdir(output)
     
     sentences = MySentences(datafilename, filename=pattern) # a memory-friendly iterator
-    model1 = gensim.models.Word2Vec(size=200, workers=8, window=5, sg=1, negative=15, iter=5)
+    model1 = gensim.models.Word2Vec(size=200,  min_count=1, workers=8, window=5, sg=1, negative=15, iter=5)
     model1.build_vocab(sentences)
 
     model1.train(sentences, total_examples=model1.corpus_count, epochs =5)

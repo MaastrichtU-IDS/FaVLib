@@ -102,8 +102,8 @@ if __name__ == "__main__":
     parser.add_argument('-emb', required=True, dest='embeddings', help="enter embedding file")
     parser.add_argument('-relmap', required=True, dest='relmapping',help="enter folder that contains relation mapping file (relation2id.txt)")
     parser.add_argument('-test', required=True, dest='test', help="enter test fact file")
-    parser.add_argument('-otest', required=True, dest='train_output', help="enter file name for prediction output")
-    parser.add_argument('-otrain', required=True, dest='test_output', help="enter file name for prediction output")
+    parser.add_argument('-otrain', required=True, dest='train_output', help="enter file name for prediction output")
+    parser.add_argument('-otest', required=True, dest='test_output', help="enter file name for prediction output")
     
     args = parser.parse_args()
     
@@ -126,7 +126,6 @@ if __name__ == "__main__":
     orgs = orgs.union(train_df.Entity2.unique())
     orgs = orgs.intersection(emb_df.Entity.unique())
 
-    print (len(orgs))
 
     train_df = train_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 
