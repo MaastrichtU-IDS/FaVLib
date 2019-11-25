@@ -1,4 +1,4 @@
-FROM jupyter/pyspark-notebook:814ef10d64fb
+FROM jupyter/pyspark-notebook:ad3574d3c5c7
 USER root
 
 WORKDIR /jupyter
@@ -15,6 +15,6 @@ RUN apt-get update && apt-get install -y \
     cwltool
 
 RUN pip install --upgrade pip && \
-  pip install -r requirements.txt
+  pip install -r requirements.txt --no-cache-dir
 
 
