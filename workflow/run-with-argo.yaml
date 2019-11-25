@@ -1,0 +1,45 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: argo-remzi-favlib-
+spec:
+  entrypoint: run-favlib-workflow
+  volumes:
+  - name: workdir
+    persistentVolumeClaim:
+      claimName: pvc-mapr-projects-test-vincent 
+      # claimName: pvc-mapr-projects-showcase 
+    # hostPath:
+    #   path: /data/d2s-workspace
+    #   type: Directory
+
+  parallelism: 2
+  templates:
+  - name: run-favlib-workflow
+    steps:
+    - - name: run-favlib
+        template: favlib
+        arguments:
+          parameters:
+          - name: fileToProcess
+            value: "{{item}}"
+        withItems:
+        - /mainctrfs/jupyter/workflow/workflow-aynec.yml
+        # - /jupyter/FaVLib/workflow/workflow-job2.yml
+        # TODO: argo unexpectedly mount /data in /mainctrfs
+
+  - name: favlib
+    inputs:
+      parameters:
+      - name: fileToProcess
+    container:
+      image: umids/favlib:latest
+      # You might need to add /mainctrfs at the start of the path (argo bug to be solved)
+      #command: [cwltool, --outdir, "/mainctrfs/jupyter/output/"]
+      command: [cwltool, --outdir, "/mainctrfs/jupyter/output/"]
+      args: ["/mainctrfs/jupyter/workflow/main-workflow-aynec.cwl", "{{inputs.parameters.fileToProcess}}"]
+      volumeMounts:
+      - name: workdir
+        mountPath: /jupyter/FaVLib
+        subpath: favlib-remzi
