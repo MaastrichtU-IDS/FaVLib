@@ -30,7 +30,6 @@ outputs:
     type: Directory
     outputBinding:
       glob: walks
-label: Generate RDF2Vec embeddings
 arguments:
   - $(inputs.working_directory)src/RDF2Vec.py
   - '-tr'

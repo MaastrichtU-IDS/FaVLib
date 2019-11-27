@@ -25,7 +25,6 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.outFolder)
-label: 'Generate negative and positive examples, Ammar Ammar <ammar257ammar@gmail.com>'
 arguments:
   - $(inputs.working_directory)src/datagen/DataGen.py
   - '--inF'

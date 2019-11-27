@@ -26,9 +26,6 @@ outputs:
     type: File?
     outputBinding:
       glob: results.csv
-label: >-
-  Fact validation library. A step to generate embeddings, Ammar Ammar
-  <ammar257ammar@gmail.com>
 arguments:
   - $(inputs.working_directory)src/TrainingFactModel.py
   - '-train'

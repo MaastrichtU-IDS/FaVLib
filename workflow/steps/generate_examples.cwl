@@ -3,7 +3,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
 
-label: Fact validation library. A step to generate negative and positive examples, Ammar Ammar <ammar257ammar@gmail.com> 
 
 baseCommand: [java]
 
