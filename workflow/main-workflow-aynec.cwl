@@ -8,36 +8,36 @@ $namespaces:
 inputs:
   - id: vectors_file
     type: string
-    'sbg:x': 0
-    'sbg:y': 106.71875
+    'sbg:x': 106.72399139404297
+    'sbg:y': -153.3798370361328
   - id: working_directory
     type: string
     'sbg:x': -57.34417724609375
     'sbg:y': -52.35772705078125
   - id: inputFile
     type: string
-    'sbg:x': 0
-    'sbg:y': 426.90625
+    'sbg:x': -145.90115356445312
+    'sbg:y': 586.761474609375
   - id: propNegatives
     type: float
-    'sbg:x': -219.9027557373047
-    'sbg:y': 173.48622131347656
+    'sbg:x': -166.3134765625
+    'sbg:y': 193.26405334472656
   - id: negStrategy
     type: string
-    'sbg:x': -199.2707977294922
-    'sbg:y': 333.7439270019531
+    'sbg:x': -154.41909790039062
+    'sbg:y': 326.2453308105469
   - id: outFolder
     type: string
-    'sbg:x': 443.9027099609375
-    'sbg:y': 255.72747802734375
+    'sbg:x': -177.0799102783203
+    'sbg:y': 61.81605911254883
   - id: fractionTest
     type: float?
-    'sbg:x': 0
-    'sbg:y': 533.59375
+    'sbg:x': -137.7955322265625
+    'sbg:y': 715.37646484375
   - id: minNumRel
     type: int
-    'sbg:x': -237.071044921875
-    'sbg:y': 482.778564453125
+    'sbg:x': -142.43443298339844
+    'sbg:y': 459.0340881347656
 outputs:
   - id: graph_output
     outputSource:
@@ -127,8 +127,8 @@ steps:
     label: >-
       Fact validation library. A step to generate embeddings, Ammar Ammar
       <ammar257ammar@gmail.com>
-    'sbg:x': 751.0256958007812
-    'sbg:y': 299.19317626953125
+    'sbg:x': 858.1845092773438
+    'sbg:y': 271.5503234863281
   - id: generate_examples_aynec
     in:
       - id: inputFile
@@ -152,6 +152,6 @@ steps:
     label: >-
       Fact validation library. A step to generate negative and positive
       examples, Ammar Ammar <ammar257ammar@gmail.com>
-    'sbg:x': 193.58506774902344
-    'sbg:y': 320.15625
+    'sbg:x': 330.7955322265625
+    'sbg:y': 282.17376708984375
 requirements: []

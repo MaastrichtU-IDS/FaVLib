@@ -1,3 +1,5 @@
 sklearn
+pykeen
 findspark==1.3.0
 gensim==3.8.1
+

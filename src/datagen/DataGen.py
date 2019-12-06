@@ -697,9 +697,9 @@ class DatasetsGenerator():
 				for edge in self.graphs[split]["train"]["negative"]:
 					file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
 		print("Exporting train positive triples")
-		with open(self.results_directory + "/train_positives.txt", "w", encoding="utf-8") as file:
+		with open(self.results_directory + "/train_positives.tsv", "w", encoding="utf-8") as file:
 			for edge in self.graphs[split]["train"]["positive"]:
-				file.write("\t".join((edge[1], edge[0], edge[2], "1")) + "\n")
+				file.write("\t".join((edge[1], edge[0], edge[2])) + "\n")
 		print("Exporting test triples")
 		with open(self.results_directory + "/test.txt", "w", encoding="utf-8") as file:
 			for edge in self.graphs[split]["test"]["positive"]:
