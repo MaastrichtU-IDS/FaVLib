@@ -17,8 +17,7 @@ The library integrates various tools including AYNEC (https://github.com/tdg-sev
 ## How to run
 
 ## Using Docker 
-* First make sure Docker is installed!!
-
+* First make sure Docker is installed!
 * Clone the current repository
 ```shell
 git clone https://github.com/MaastrichtU-IDS/FaVLib.git
@@ -28,15 +27,33 @@ git clone https://github.com/MaastrichtU-IDS/FaVLib.git
 cd FavLib
 ```
 
+* Build the container image
+
 ```shell
 docker build -t favlib .
 ```
 
+* Run the container
+
 ```shell
 docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp favlib
 ```
+> Access the Jupyter notebook on http://localhost:8888
+
 ```shell
 docker exec -it favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow-pykeen.cwl workflow/workflow-pykeen.yml
 ```
 
 * That's it!!
+
+## Install Docker
+
+https://docs.docker.com/install/
+
+Windows requires to have:
+
+* Windows 10 64-bit: Pro, Enterprise, or Education (Build 15063 or later).
+
+* Hyper-V and Containers Windows features must be enabled.
+
+See [this page](https://d2s.semanticscience.org/docs/guide-docker) for some basic informations about how to run Docker, connect it to your laptop storage and deploy applications locally.
