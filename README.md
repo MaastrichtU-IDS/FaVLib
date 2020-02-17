@@ -4,9 +4,9 @@
 In order to use an integrated solution to the fact validation problem, we developed a Fact Validation Library, called FaVLib, with a workflow implementation that uses Docker and Common Workflow Language. This library trains a classifier on embedding features to predict truthfulness of a given fact based on other facts already present in the knowledge graph.
 
 The FaVLib uses Docker and Common Workflow Language (CWL) representation to properly configure software components and easily execute the workflow. The workflow depicted in Figure has three main steps: 
-* 1- data generation 
-* 2- embedding learning  
-* 3- triple classification
+1. data generation 
+2. embedding learning
+3. triple classification
 
 ![FaVLib Workflow](workflow_factvalid.png)
 
@@ -14,15 +14,15 @@ In the first step, the data generation is carried out on a Knowledge Graph (KG) 
 
 The library integrates various tools including AYNEC (https://github.com/tdg-seville/AYNEC), which generates negative/positive samples and splits data into train and test set, and PyKEEN (https://github.com/SmartDataAnalytics/PyKEEN), which learns multiple embedding methods and machine learning methods for triple fact classification. 
 
-## How to run
+## How to run it
 
 ## Using Docker 
-* First make sure Docker is installed!
-* Clone the current repository
+* First make sure [Docker](https://docs.docker.com/install/) is installed! ([see below](https://github.com/MaastrichtU-IDS/FaVLib#install-docker))
+* Clone this repository
 ```shell
 git clone https://github.com/MaastrichtU-IDS/FaVLib.git
 ```
-* Enter the repository
+* Move to the cloned repository
 ```shell
 cd FavLib
 ```
@@ -33,18 +33,20 @@ cd FavLib
 docker build -t favlib .
 ```
 
-* Run the container
+* Run the container on port `8888`
 
 ```shell
 docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp favlib
 ```
 > Access the Jupyter notebook on http://localhost:8888
 
+* Run a workflow:
+
 ```shell
 docker exec -it favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow-pykeen.cwl workflow/workflow-pykeen.yml
 ```
 
-* That's it!!
+* That's it!
 
 ## Install Docker
 
