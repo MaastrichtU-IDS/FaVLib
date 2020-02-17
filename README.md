@@ -27,16 +27,16 @@ git clone https://github.com/MaastrichtU-IDS/FaVLib.git
 cd FavLib
 ```
 
-* Build the container image
+* Pull the container image (or build it if you prefer)
 
 ```shell
-docker build -t favlib .
+docker pull umids/favlib
 ```
 
 * Run the container on port `8888`
 
 ```shell
-docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp favlib
+docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp umids/favlib
 ```
 > Access the Jupyter notebook on http://localhost:8888
 
