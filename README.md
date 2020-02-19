@@ -40,11 +40,42 @@ docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp u
 ```
 > Access the Jupyter notebook on http://localhost:8888
 
+
 * Run a workflow:
 
 ```shell
 docker exec -it favlib cwltool --outdir=/jupyter/output/ workflow/main-workflow-pykeen.cwl workflow/workflow-pykeen.yml
 ```
+* workflow/main-workflow-pykeen.cwl : workflow description defined in CWL
+* workflow/workflow-pykeen.yml      : configuration file, need to define your input and parameter
+* --outdir=/jupyter/output/         : the output of the workflow will be stored in '/jupyter/output/'
+
+Look at the configuration file, workflow/workflow-pykeen.yml  :
+### Data Generation
+* inputFile:  /jupyter/data/input/sample_kg.tsv
+* minNumRel: 1
+* negStrategy: 'change_source'
+* fractionTest: 0.1
+* predict: 1    # to make prediction
+* predicate: '\<hasCapital\>'  # make prediction for only given predicate
+* numTrainNegatives: 1   # number of negative for each triple in train
+* numTestNegatives: 10   # number of negative for each triple in train
+### Embedding Learning
+* embedding_model_name: 'TransE'
+* embedding_dim: 50
+* normalization_of_entities: 2
+* seed: 0
+* scoring_function: 1
+* margin_loss: 1
+* learning_rate: 0.01
+* batch_size: 64
+* num_epochs: 50
+* filter_negative_triples: True
+* preferred_device: 'cpu'
+ ### Triple Classification
+* output_train: 0  # to output the training feature matrix (to test your with different model)
+* output_test: 0  # to output the test feature matrix
+
 
 * That's it!
 
