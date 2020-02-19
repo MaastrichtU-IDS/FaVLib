@@ -1,9 +1,8 @@
+class: CommandLineTool
+cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com/'
 id: triple_classifier_pykeen
-label: triple_classifier_pykeen
-class: CommandLineTool
-cwlVersion: v1.0
 baseCommand:
   - python3
 inputs:
@@ -13,19 +12,18 @@ inputs:
     type: Directory
   - id: working_directory
     type: string
+  - id: output_train
+    type: int
+  - id: output_test
+    type: int
+  - id: predict
+    type: int
 outputs:
-  - id: classifier_test_output
-    type: File
+  - id: output_folder
+    type: Directory
     outputBinding:
-      glob: test_output.csv
-  - id: classifier_train_output
-    type: File
-    outputBinding:
-      glob: train_output.csv
-  - id: results
-    type: File?
-    outputBinding:
-      glob: results.csv
+      glob: clsout
+label: triple_classifier_pykeen
 arguments:
   - $(inputs.working_directory)src/TrainingTripleFacts.py
   - '-train'
@@ -37,8 +35,10 @@ arguments:
   - '-relmap'
   - $(inputs.embedding_output_folder.path)/relation_to_id.json
   - '-otrain'
-  - train_output.csv
+  - $(inputs.output_train)
   - '-otest'
-  - test_output.csv
+  - $(inputs.output_test)
+  - '-predict'
+  - $(inputs.predict)
 requirements:
   - class: InlineJavascriptRequirement

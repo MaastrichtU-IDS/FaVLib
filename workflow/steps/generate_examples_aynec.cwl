@@ -9,9 +9,6 @@ inputs:
     type: string
   - id: outFolder
     type: string
-  - default: all
-    id: propNegatives
-    type: float
   - id: negStrategy
     type: string
   - id: working_directory
@@ -20,6 +17,14 @@ inputs:
     type: int
   - id: fractionTest
     type: float?
+  - id: numTestNegatives
+    type: int?
+  - id: numTrainNegatives
+    type: int?
+  - id: predicate
+    type: string?
+  - id: predict
+    type: int
 outputs:
   - id: examples_file_output
     type: Directory
@@ -31,13 +36,19 @@ arguments:
   - $(inputs.inputFile)
   - '--outF'
   - $(inputs.outFolder)
-  - '--numNegatives'
-  - $(inputs.propNegatives)
   - '--negStrategy'
   - $(inputs.negStrategy)
   - '--minNumRel'
   - $(inputs.minNumRel)
   - '--fractionTest'
   - $(inputs.fractionTest)
+  - '--numTestNegatives'
+  - $(inputs.numTestNegatives)
+  - '--numTrainNegatives'
+  - $(inputs.numTrainNegatives)
+  - '--predicate'
+  - $(inputs.predicate)
+  - '--predict'
+  - $(inputs.predict)
 requirements:
   - class: InlineJavascriptRequirement

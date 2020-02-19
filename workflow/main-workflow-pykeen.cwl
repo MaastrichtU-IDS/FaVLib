@@ -7,97 +7,107 @@ $namespaces:
 inputs:
   - id: working_directory
     type: string
-    'sbg:x': -893.7548217773438
-    'sbg:y': 231
+    'sbg:x': 0
+    'sbg:y': 0
   - id: seed
     type: int
-    'sbg:x': -767.6201171875
-    'sbg:y': -34.768558502197266
+    'sbg:x': 0
+    'sbg:y': 106.78125
   - id: embedding_model_name
     type: string
-    'sbg:x': -736.803466796875
-    'sbg:y': -256.7161560058594
+    'sbg:x': 260.19049072265625
+    'sbg:y': 1347.15869140625
   - id: norm_of_entities
     type: int?
-    'sbg:x': -772.9112548828125
-    'sbg:y': -389.29888916015625
+    'sbg:x': 0
+    'sbg:y': 747.46875
   - id: margin_loss
     type: float
-    'sbg:x': -682.38037109375
-    'sbg:y': -524.2952270507812
+    'sbg:x': 0
+    'sbg:y': 1067.8125
   - id: learning_rate
     type: float
-    'sbg:x': -690
-    'sbg:y': -638.1082153320312
+    'sbg:x': 0
+    'sbg:y': 1174.59375
   - id: num_epochs
     type: int
-    'sbg:x': -682
-    'sbg:y': -742
+    'sbg:x': 0
+    'sbg:y': 640.6875
   - id: preferred_device
     type: string
-    'sbg:x': -680.5476684570312
-    'sbg:y': -884.610107421875
-  - id: outFolder
-    type: string
-    'sbg:x': -829.4150390625
-    'sbg:y': 405.7232971191406
-  - id: propNegatives
-    type: float
-    'sbg:x': -817.5718994140625
-    'sbg:y': 544.5314331054688
+    'sbg:x': 0
+    'sbg:y': 427.125
   - id: negStrategy
     type: string
-    'sbg:x': -843.4426879882812
-    'sbg:y': 807.5977783203125
+    'sbg:x': 0
+    'sbg:y': 854.25
   - id: minNumRel
     type: int
-    'sbg:x': -830.5955200195312
-    'sbg:y': 940.5955200195312
+    'sbg:x': 0
+    'sbg:y': 961.03125
   - id: fractionTest
     type: float?
-    'sbg:x': -850.8707885742188
-    'sbg:y': 1098.9224853515625
+    'sbg:x': 0
+    'sbg:y': 1388.15625
   - id: scoring_function
     type: int
-    'sbg:x': -801.6873168945312
-    'sbg:y': -149.20843505859375
+    'sbg:x': 0
+    'sbg:y': 213.5625
   - id: embedding_dim
     type: int
-    'sbg:x': -818.6644287109375
-    'sbg:y': 69.4970932006836
+    'sbg:x': 696.8253784179688
+    'sbg:y': 1375.8492431640625
   - id: inputFile
     type: string
-    'sbg:x': -799.7382202148438
-    'sbg:y': 672.4539184570312
+    'sbg:x': 0
+    'sbg:y': 1281.375
   - id: batch_size
     type: int
-    'sbg:x': -905.2664794921875
-    'sbg:y': 2.09871768951416
+    'sbg:x': 469.015869140625
+    'sbg:y': 1349.9603271484375
+  - id: predicate
+    type: string?
+    'sbg:x': -442.39019775390625
+    'sbg:y': 151.89405822753906
+  - id: predict
+    type: int
+    'sbg:x': -454.02911376953125
+    'sbg:y': 4.300266742706299
+  - id: numTestNegatives
+    type: int?
+    'sbg:x': -450.89825439453125
+    'sbg:y': 396.4483337402344
+  - id: numTrainNegatives
+    type: int?
+    'sbg:x': -555.7281494140625
+    'sbg:y': 253.3624725341797
+  - id: output_test
+    type: int
+    'sbg:x': -326.12030029296875
+    'sbg:y': 791.013916015625
+  - id: output_train
+    type: int
+    'sbg:x': -378.38824462890625
+    'sbg:y': 1007.3016967773438
 outputs:
   - id: embedding_output_folder
     outputSource:
       - generate_embeddings_pykeen/output_folder
     type: Directory
-    'sbg:x': 811.05615234375
-    'sbg:y': 45.84831619262695
-  - id: results
+    'sbg:x': 1255.015869140625
+    'sbg:y': 1100.579345703125
+  - id: examples_file_output
     outputSource:
-      - triple_classifier_pykeen/results
-    type: File?
-    'sbg:x': 840.4976806640625
-    'sbg:y': 444.3939514160156
-  - id: classifier_train_output
+      - generate_examples_aynec/examples_file_output
+    type: Directory
+    'sbg:x': 1333.359375
+    'sbg:y': 110.99861907958984
+  - id: output_folder
     outputSource:
-      - triple_classifier_pykeen/classifier_train_output
-    type: File
-    'sbg:x': 836.964111328125
-    'sbg:y': 561.0017700195312
-  - id: classifier_test_output
-    outputSource:
-      - triple_classifier_pykeen/classifier_test_output
-    type: File
-    'sbg:x': 861.6990966796875
-    'sbg:y': 755.3480224609375
+      - triple_classifier_pykeen/output_folder
+    type: Directory
+    'sbg:x': 1420.779052734375
+    'sbg:y': 662.6502685546875
 steps:
   - id: generate_embeddings_pykeen
     in:
@@ -106,7 +116,7 @@ steps:
       - id: working_directory
         source: working_directory
       - id: output_folder_name
-        source: outFolder
+        default: embedding
       - id: seed
         source: seed
       - id: embedding_model_name
@@ -132,17 +142,15 @@ steps:
     out:
       - id: output_folder
     run: steps/generate_embeddings_pykeen.cwl
-    label: generate_embeddings_pykeen
-    'sbg:x': 610
-    'sbg:y': 115.02214813232422
+    label: Embedding Learning
+    'sbg:x': 676.2063598632812
+    'sbg:y': 1029.111083984375
   - id: generate_examples_aynec
     in:
       - id: inputFile
         source: inputFile
       - id: outFolder
-        source: outFolder
-      - id: propNegatives
-        source: propNegatives
+        default: datagen
       - id: negStrategy
         source: negStrategy
       - id: working_directory
@@ -151,11 +159,20 @@ steps:
         source: minNumRel
       - id: fractionTest
         source: fractionTest
+      - id: numTestNegatives
+        source: numTestNegatives
+      - id: numTrainNegatives
+        source: numTrainNegatives
+      - id: predicate
+        source: predicate
+      - id: predict
+        source: predict
     out:
       - id: examples_file_output
     run: steps/generate_examples_aynec.cwl
-    'sbg:x': -164.25753784179688
-    'sbg:y': 802.8246459960938
+    label: Data Generation
+    'sbg:x': 580.547607421875
+    'sbg:y': 82.84127044677734
   - id: triple_classifier_pykeen
     in:
       - id: embedding_output_folder
@@ -164,12 +181,16 @@ steps:
         source: generate_examples_aynec/examples_file_output
       - id: working_directory
         source: working_directory
+      - id: output_train
+        source: output_train
+      - id: output_test
+        source: output_test
+      - id: predict
+        source: predict
     out:
-      - id: classifier_test_output
-      - id: classifier_train_output
-      - id: results
+      - id: output_folder
     run: steps/triple_classifier_pykeen.cwl
     label: triple_classifier_pykeen
-    'sbg:x': 506.9078674316406
-    'sbg:y': 502.02581787109375
+    'sbg:x': 1045.263427734375
+    'sbg:y': 676.910888671875
 requirements: []

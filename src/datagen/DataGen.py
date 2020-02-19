@@ -394,6 +394,56 @@ class DatasetsGenerator():
 
 			self.group_edges()
 
+	def make_prediction_graph(self, fraction_test=0.1, fraction_test_relations={}):
+		"""
+		Splits the graph into training and testing sets. Creates as many different splits as given by the "number_splits" property
+
+		Arguments:
+		fraction_test_relations -- a dictionary with the fraction of each relation to take for testing. Default: an empty dictionary, which implies the same fraction for all relations (given by "fraction_test")
+		fraction_test -- the fraction to take from all relations for testing. Only used if "fraction_test_relations" is empty.
+
+		Generates and stores:
+		graphs -- a dictionary with the split identifier as keys, and the training and testing sets of each split as values in a dictionary with "train" and "test" keys. Both "train" and "test" return a dictionary with, so far, only the "positive" key corresponding to the positiva edges in a set.
+		"""
+
+		print("\nDividing graph")
+		train_positive = []
+		test_positive = []
+		# If we do not provide a fraction of testing for each individual relation, the same relation is used for all of them
+		if(len(fraction_test_relations) is 0):
+			fraction_test_relations = {rel: fraction_test for rel in self.relations}
+		# We create a variable number of splits.
+		for i in trange(self.number_splits):
+			# We initialise the variable where the splits are stored
+			self.graphs[i] = dict()
+			self.graphs[i]["train"] = dict()
+			self.graphs[i]["predict"] = dict()
+			self.graphs[i]["train"]["positive"] = set()
+			self.graphs[i]["predict"]["positive"] = set()
+			self.graphs[i]["train"]["negative"] = set()
+			self.graphs[i]["predict"]["negative"] = set()
+			# We take a fraction of the edges of each relation
+			for rel in tqdm(self.relations):
+				# We take the edges of the current relation
+				edges = [(rel, s, t) for s, t in self.grouped_edges[rel]]
+				# Different splits use different offsets for the edges that are taken for testing
+				offset = floor(len(edges) / self.number_splits * i)
+				# We take the fraction for the current relation
+				fraction_test = fraction_test_relations.get(rel, 0.0)
+				# We compute how many edges will be taken for testing
+				num_test = floor(len(edges) * fraction_test)
+				# We compute what will be the indices of the edges that will be taken for training and testing, using the offset
+				ids_test = [(offset + x) % len(edges) for x in range(0, num_test)]
+				ids_train = [(offset + x) % len(edges) for x in range(num_test, len(edges))]
+				# We take the edges of each set using the indices
+				edges_test = [edges[id] for id in ids_test]
+				edges_train = [edges[id] for id in ids_train]
+				# Finally, we store them in the variable
+				self.graphs[i]["predict"]["positive"].update(edges_test)
+
+				self.graphs[i]["train"]["positive"].update(edges_train)
+				self.graphs[i]["train"]["positive"].update(edges_test)
+
 	def split_graph(self, fraction_test=0.1, fraction_test_relations={}):
 		"""
 		Splits the graph into training and testing sets. Creates as many different splits as given by the "number_splits" property
@@ -672,14 +722,14 @@ class DatasetsGenerator():
 						pbar.refresh()
 		self.graphs[split][train_test]["negative"] = negatives
 
-	def export_files(self, split, include_train_negatives, include_dataproperties, include_types):
+	def export_files(self, split, prediction_vs_test,  include_train_negatives, include_dataproperties, include_types):
 		"""
 		Creates the output files, excluding the gexf files.
 
 		Arguments:
 		split -- the split to generate the output from.
 		include_train_negatives -- whether or not training negatives should be included.
-
+		
 		Outputs the following files:
 		train.txt -- the training triples, with a triple per line, separated by tabs and with a label in the following order: <source relation target label>. Label is 1 if positive and -1 if negative.
 		test.txt -- the testing triples, following the same format as train.txt
@@ -700,12 +750,20 @@ class DatasetsGenerator():
 		with open(self.results_directory + "/train_positives.tsv", "w", encoding="utf-8") as file:
 			for edge in self.graphs[split]["train"]["positive"]:
 				file.write("\t".join((edge[1], edge[0], edge[2])) + "\n")
-		print("Exporting test triples")
-		with open(self.results_directory + "/test.txt", "w", encoding="utf-8") as file:
-			for edge in self.graphs[split]["test"]["positive"]:
-				file.write("\t".join((edge[1], edge[0], edge[2], "1")) + "\n")
-			for edge in self.graphs[split]["test"]["negative"]:
-				file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
+		if not prediction_vs_test:
+			print("Exporting test triples")
+			with open(self.results_directory + "/test.txt", "w", encoding="utf-8") as file:
+				for edge in self.graphs[split]["test"]["positive"]:
+					file.write("\t".join((edge[1], edge[0], edge[2], "1")) + "\n")
+				for edge in self.graphs[split]["test"]["negative"]:
+					file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
+		else:
+			print("Exporting prediction triples")
+			with open(self.results_directory + "/test.txt", "w", encoding="utf-8") as file:
+				for edge in self.graphs[split]["predict"]["positive"]:
+					file.write("\t".join((edge[1], edge[0], edge[2], "1")) + "\n")
+				for edge in self.graphs[split]["predict"]["negative"]:
+					file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
 		print("Exporting relations")
 		with open(self.results_directory + "/relations.txt", "w", encoding="utf-8") as file:
 			for rel, edges in sorted(self.grouped_edges.items(), key=lambda x: len(x[1]), reverse=True):
@@ -744,8 +802,11 @@ def main():
 	parser.add_argument('--notCreateSum', action='store_false', help='Specify if you do not want to create an html summary of the relations frequency and the entities degree')
 	parser.add_argument('--computePPR', action='store_true', help='Specify to compute the personalised page rank (PPR) of each node in the graph. So far this is only useful when generating negatives with the "PPR" strategy, so it should be set to False if it is not used')
 	parser.add_argument('--fractionTest', type=float, default=0.2, help='Fraction of the edges used for testing')
-	parser.add_argument('--numNegatives', type=int, default=1, help='Number of negatives to generate per positive')
+	parser.add_argument('--numTrainNegatives', type=int, default=1, help='Number of negatives to generate per positive in training set')
+	parser.add_argument('--numTestNegatives', type=int, default=1, help='Number of negatives to generate per positive in test set')
 	parser.add_argument('--negStrategy', default='change_target', help='Strategy used to generate negatives', choices=['change_target', 'change_source', 'change_both', 'change_target_random', 'change_source_random', 'change_both_random', 'PPR'])
+	parser.add_argument('--predicate', required=False, default='', help='Predicate type to generate predictions')
+	parser.add_argument('--predict', required=True, default=0, help='Generate prediction probabilities')
 	parser.add_argument('--notNegTraining', action='store_false', help='Specify if negatives should not be generated for the training set. If False, they are only generated for the testing set')
 	parser.add_argument('--notExportGEXF', action='store_false', help='Specify if the dataset should not be exported as a gexf file, useful for visualisation')
 	parser.add_argument('--excludeDataProp', action='store_true', help='Specify if the dataset should not include a file with the data properties associated to entities')
@@ -762,7 +823,8 @@ def main():
 	MIN_NUM_REL = args.minNumRel
 	REACH_FRACTION = args.reachFraction
 	TESTING_FRACTION = args.fractionTest
-	NUMBER_NEGATIVES = args.numNegatives
+	NUMBER_TEST_NEGATIVES = args.numTestNegatives
+	NUMBER_TRAIN_NEGATIVES = args.numTrainNegatives
 	NEGATIVES_STRATEGY = args.negStrategy
 	EXPORT_GEXF = args.notExportGEXF
 	CREATE_SUMMARY = args.notCreateSum
@@ -771,6 +833,9 @@ def main():
 	INCLUDE_DATA_PROP = not args.excludeDataProp
 	SEPARATE_TYPES = args.separateTypes
 	print(OUTPUT_FOLDER)
+
+	PREDICATE = args.predicate
+	PREDICT = args.predict
 
 	# We read and preprocess the graph
 	if(INPUT_FILE.endswith("nt")):
@@ -786,13 +851,20 @@ def main():
 	if(COMPUTE_PPR):
 		generator.compute_PPR(5)
 	# We split the graph
-	generator.split_graph(TESTING_FRACTION)
-	# We generate the negatives
-	generator.generate_negatives(0, "test", NUMBER_NEGATIVES, NEGATIVES_STRATEGY, True, False)
+	if PREDICATE != '':
+		fraction_test_relations = {PREDICATE:TESTING_FRACTION}
+	
+	if PREDICT:
+		generator.make_prediction_graph(TESTING_FRACTION, fraction_test_relations)
+		generator.generate_negatives(0, "predict", NUMBER_TEST_NEGATIVES, NEGATIVES_STRATEGY, True, False)
+	else:
+		generator.split_graph(TESTING_FRACTION, fraction_test_relations)
+		# We generate the negatives
+		generator.generate_negatives(0, "test", NUMBER_TEST_NEGATIVES, NEGATIVES_STRATEGY, True, False)
 	if(GENERATE_NEGATIVES_TRAINING):
-		generator.generate_negatives(0, "train", NUMBER_NEGATIVES, NEGATIVES_STRATEGY, True, False)
+		generator.generate_negatives(0, "train", NUMBER_TRAIN_NEGATIVES, NEGATIVES_STRATEGY, True, False)
 	# We export the files
-	generator.export_files(0, True, INCLUDE_DATA_PROP, SEPARATE_TYPES)
+	generator.export_files(0, True, PREDICT, INCLUDE_DATA_PROP, SEPARATE_TYPES)
 	#if(EXPORT_GEXF):
 	#	generator.export_gexf(0, True, True, True, True)
 

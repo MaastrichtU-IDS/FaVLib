@@ -102,8 +102,9 @@ if __name__ == "__main__":
     #parser.add_argument('-neg', required=True, dest='negative', help="enter negative exmaple file")
     parser.add_argument('-emb', required=True, dest='embeddings', help="enter embedding file")
     parser.add_argument('-relmap', required=True, dest='relmapping',help="enter mapping file (relation_to_id.json)")
-    parser.add_argument('-otrain', required=True, dest='train_output', help="enter file name for prediction output")
-    parser.add_argument('-otest', required=True, dest='test_output', help="enter file name for prediction output")
+    parser.add_argument('-otrain', required=True, dest='train_output', type=int, help="create file name for train features")
+    parser.add_argument('-otest', required=True, dest='test_output', type=int, help="create file name for test features")
+    parser.add_argument('-predict', required=True, dest='predict', type=int, help="create file name for prediction output")
     
     args = parser.parse_args()
     
@@ -115,6 +116,8 @@ if __name__ == "__main__":
     test_file = args.test
     train_output = args.train_output
     test_output = args.test_output
+    predict  = args.predict
+    print(args)
 
     print ("Training file",train_file)
     train_df =pd.read_csv(train_file, names=['Entity1','Relation','Entity2','Class'], sep='\t', header=None)
@@ -136,7 +139,7 @@ if __name__ == "__main__":
     
 
     train_df.Relation = train_df.Relation.replace(mapping)
-    print (train_df.head())
+    #print (train_df.head())
 
     features_cols= train_df.columns.difference(['Entity1','Entity2' ,'Class'])
     X=train_df[features_cols].values
@@ -150,7 +153,7 @@ if __name__ == "__main__":
     test_df = test_df.merge(emb_df, left_on='Entity1', right_on='Entity').merge(emb_df, left_on='Entity2', right_on='Entity')
 
     
-    print (test_df.head())
+    #print (test_df.head())
     print ("number of positives in test",(len(test_df[test_df['Class']==1])))
     print ("number of neegatives in test",(len(test_df[test_df['Class']!=1])))
 
@@ -166,8 +169,12 @@ if __name__ == "__main__":
 
     test_df.Relation = test_df.Relation.replace(id2relation)
     
-    train_df.to_csv(train_output, index=False)
-    test_df.to_csv(test_output, index=False)
+    folder_out= 'clsout'
+    os.mkdir(folder_out)
+    if train_output:
+        train_df.to_csv(folder_out+'/train_output.csv', index=False)
+    if test_output:
+        test_df.to_csv(folder_out+'/test_output.csv', index=False)
 
     results = pd.DataFrame()
 
@@ -176,16 +183,28 @@ if __name__ == "__main__":
     rf_model = ensemble.RandomForestClassifier(n_estimators=200, max_depth=8, n_jobs=-1)
 
     clfs = [('Naive Bayes',nb_model),('Logistic Regression',lr_model),('Random Forest',rf_model)]
+    bestClf = clfs[0][1]
+    bestScore = 0.0
     for name, clf in clfs:
-
             clf.fit(X, y)
             scores = get_scores(clf, X_new, test_df['Class'])
             scores['method'] = name
+            if scores['roc_auc'] > bestScore:
+                bestScore= scores['roc_auc'] 
+                bestClf = clf
             results = results.append(scores, ignore_index=True)
     
+    print ("Best ROC ", bestScore, '\n',bestClf)
+
+    if predict:
+        bestClf.fit(X, y)
+        test_df['Confidence'] = bestClf.predict_proba(X_new)[:, 1]
+        test_df= test_df[test_df['Class']!=1]
+        test_df =test_df[['Entity1','Relation','Entity2','Confidence']].sort_values(by='Confidence',ascending=False)
+        test_df.to_csv(folder_out+'/prediction.csv', index=False)
 
     print (results)
-    results.to_csv('results.csv',index=False)
+    results.to_csv(folder_out+'/results.csv',index=False)
     #probs = rf_model.predict_proba(X_new)
     #test_df['TruthValue'] =  probs[:,1]
     #test_df[['Entity1','Relation','Entity2','TruthValue']].to_csv(output_file, index=False)
