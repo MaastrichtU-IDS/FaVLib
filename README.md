@@ -38,8 +38,6 @@ docker pull umids/favlib
 ```shell
 docker run -d  --rm --name favlib -p 8888:8888 -v $(pwd):/jupyter -v /tmp:/tmp umids/favlib
 ```
-> Access the Jupyter notebook on http://localhost:8888
-
 
 * Run a workflow:
 
