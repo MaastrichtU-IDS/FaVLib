@@ -1,3 +1,4 @@
+import os
 from reader import Reader
 from random import random
 from rdflib import Graph
@@ -36,8 +37,13 @@ class NTriplesReader(Reader):
 		relations = set()
 		edges = set()
 		g = Graph()
+		parse_filepath = os.path.splitext(self.file_path)
+		file_extension = parse_filepath[1].replace(".", "")
+		# Following file extensions are accepted: ‘xml’, ‘n3’, ‘nt’, ‘trix’, ‘rdfa’
+		print("file_extension=== ")
+		print(file_extension)
 		# TODO: should work for any RDF format
-		g.parse(self.file_path, format="nt")
+		g.parse(self.file_path, format=file_extension)
 		for source, relation, target in g:
 			if(self.prob == 1.0 or random() < self.prob):
 				# source = stmt.
