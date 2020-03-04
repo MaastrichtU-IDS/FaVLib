@@ -1,7 +1,7 @@
 working_directory: /jupyter/
 
 #data generation
-inputFile:  /jupyter/data/input/human_kg_train.nt
+inputFile:  /jupyter/data/input/human_kg_train.xml
 propNegatives: 1
 minNumRel: 1
 negStrategy: 'change_source'

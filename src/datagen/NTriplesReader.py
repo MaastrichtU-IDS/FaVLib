@@ -36,19 +36,16 @@ class NTriplesReader(Reader):
 		entities = dict()
 		relations = set()
 		edges = set()
-		g = Graph()
+		rdf_graph = Graph()
 		parse_filepath = os.path.splitext(self.file_path)
 		file_extension = parse_filepath[1].replace(".", "")
+		
 		# Following file extensions are accepted: ‘xml’, ‘n3’, ‘nt’, ‘trix’, ‘rdfa’
-		print("file_extension=== ")
-		print(file_extension)
+		print("Parsing RDF from file format: " + file_extension)
 		# TODO: should work for any RDF format
-		g.parse(self.file_path, format=file_extension)
-		for source, relation, target in g:
+		rdf_graph.parse(self.file_path, format=file_extension)
+		for source, relation, target in rdf_graph:
 			if(self.prob == 1.0 or random() < self.prob):
-				# source = stmt.
-				# relation = 
-				# target = line.split(" ", 3)
 				is_dataprop = target.startswith('"')
 				if source not in entities:
 					entities[source] = dict(degree=0, out_degree=0, in_degree=0, data_properties={})
