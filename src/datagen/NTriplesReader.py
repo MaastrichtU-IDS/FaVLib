@@ -37,9 +37,8 @@ class NTriplesReader(Reader):
 		relations = set()
 		edges = set()
 		rdf_graph = Graph()
-		parse_filepath = os.path.splitext(self.file_path)
-		file_extension = parse_filepath[1].replace(".", "")
-		
+		file_extension = os.path.splitext(self.file_path)[1].replace(".", "")
+
 		# Following file extensions are accepted: ‘xml’, ‘n3’, ‘nt’, ‘trix’, ‘rdfa’
 		print("Parsing RDF from file format: " + file_extension)
 		# TODO: should work for any RDF format
