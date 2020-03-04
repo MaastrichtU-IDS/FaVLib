@@ -16,6 +16,7 @@ import numpy as np
 import datetime
 from simpleTriplesReader import SimpleTriplesReader
 from NTriplesReader import NTriplesReader
+from rdflib import Graph
 #from linkedDataReader import LinkedDataReader
 import argparse
 
@@ -840,8 +841,8 @@ def main():
 	# We read and preprocess the graph
 	if(INPUT_FILE.endswith("nt")):
 		reader = NTriplesReader(INPUT_FILE, GRAPH_FRACTION, INCLUDE_DATA_PROP)
-	elif(INPUT_FORMAT in ["rdfa", "nt", "n3", "xml", "trix"]):
-		reader = LinkedDataReader(INPUT_FILE, GRAPH_FRACTION, INCLUDE_DATA_PROP, INPUT_FORMAT)
+	# elif(INPUT_FORMAT in ["rdfa", "nt", "n3", "xml", "trix"]):
+	# 	reader = LinkedDataReader(INPUT_FILE, GRAPH_FRACTION, INCLUDE_DATA_PROP, INPUT_FORMAT)
 	else:
 		reader = SimpleTriplesReader(INPUT_FILE, '\t', GRAPH_FRACTION)
 	generator = DatasetsGenerator(OUTPUT_FOLDER)

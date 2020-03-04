@@ -1,5 +1,6 @@
 from reader import Reader
 from random import random
+from rdflib import Graph
 import multiprocessing
 from tqdm import tqdm
 class NTriplesReader(Reader):
@@ -34,24 +35,30 @@ class NTriplesReader(Reader):
 		entities = dict()
 		relations = set()
 		edges = set()
-		with open(self.file_path, encoding="utf-8") as f:
-			for line in tqdm(f):
-				if(self.prob == 1.0 or random() < self.prob):
-					source, relation, target, _ = line.split(" ", 3)
-					is_dataprop = target.startswith('"')
-					if source not in entities:
-						entities[source] = dict(degree=0, out_degree=0, in_degree=0, data_properties={})
-					entities[source]["out_degree"] += 1
-					entities[source]["degree"] += 1
-					if not is_dataprop:
-						if target not in entities:
-							entities[target] = dict(degree=0, out_degree=0, in_degree=0, data_properties={})
-						entities[target]["in_degree"] += 1
-						entities[target]["degree"] += 1
-						relations.add(relation)
-						edges.add((relation, source, target))
-					else:
-						if(self.include_dataprop):
-							entities[source]["data_properties"][relation] = target
+		g = Graph()
+		g.parse(self.file_path, format="nt")
+		print(len(g))
+		# with open(self.file_path, encoding="utf-8") as f:
+		# 	for line in tqdm(f):
+		for source, relation, target in g:
+			if(self.prob == 1.0 or random() < self.prob):
+				# source = stmt.
+				# relation = 
+				# target = line.split(" ", 3)
+				is_dataprop = target.startswith('"')
+				if source not in entities:
+					entities[source] = dict(degree=0, out_degree=0, in_degree=0, data_properties={})
+				entities[source]["out_degree"] += 1
+				entities[source]["degree"] += 1
+				if not is_dataprop:
+					if target not in entities:
+						entities[target] = dict(degree=0, out_degree=0, in_degree=0, data_properties={})
+					entities[target]["in_degree"] += 1
+					entities[target]["degree"] += 1
+					relations.add(relation)
+					edges.add((relation, source, target))
+				else:
+					if(self.include_dataprop):
+						entities[source]["data_properties"][relation] = target
 
 		return (entities, relations, edges)
