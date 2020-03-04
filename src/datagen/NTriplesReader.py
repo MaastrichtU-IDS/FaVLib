@@ -36,10 +36,8 @@ class NTriplesReader(Reader):
 		relations = set()
 		edges = set()
 		g = Graph()
+		# TODO: should work for any RDF format
 		g.parse(self.file_path, format="nt")
-		print(len(g))
-		# with open(self.file_path, encoding="utf-8") as f:
-		# 	for line in tqdm(f):
 		for source, relation, target in g:
 			if(self.prob == 1.0 or random() < self.prob):
 				# source = stmt.
