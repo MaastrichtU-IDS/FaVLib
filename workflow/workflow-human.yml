@@ -1,0 +1,29 @@
+working_directory: /jupyter/
+
+#data generation
+inputFile:  /jupyter/data/input/human_kg_train.nt
+propNegatives: 1
+minNumRel: 1
+negStrategy: 'change_source'
+fractionTest: 0.1
+predict: 1
+numTrainNegatives: 1
+numTestNegatives: 10
+predicate: '<http://www.wikidata.org/prop/direct/P3373>'
+
+#Embedding parameters
+embedding_model_name: 'TransE'
+embedding_dim: 50
+normalization_of_entities: 2
+seed: 0
+scoring_function: 1
+margin_loss: 1
+learning_rate: 0.01
+batch_size: 64
+num_epochs: 50
+filter_negative_triples: True
+preferred_device: 'cpu'
+
+#triple classification
+output_train: 0
+output_test: 0
