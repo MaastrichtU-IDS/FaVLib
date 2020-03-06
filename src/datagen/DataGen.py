@@ -759,11 +759,15 @@ class DatasetsGenerator():
 					file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
 		else:
 			print("Exporting prediction triples")
+			nedges = 0
 			with open(self.results_directory + "/test.txt", "w", encoding="utf-8") as file:
 				for edge in self.graphs[split]["predict"]["positive"]:
 					file.write("\t".join((edge[1], edge[0], edge[2], "1")) + "\n")
+					nedges+=1
 				for edge in self.graphs[split]["predict"]["negative"]:
 					file.write("\t".join((edge[1], edge[0], edge[2], "-1")) + "\n")
+					nedges+=1
+				print("Number of prediction triples", nedges)
 		print("Exporting relations")
 		with open(self.results_directory + "/relations.txt", "w", encoding="utf-8") as file:
 			for rel, edges in sorted(self.grouped_edges.items(), key=lambda x: len(x[1]), reverse=True):

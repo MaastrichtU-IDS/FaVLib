@@ -9,7 +9,7 @@ fractionTest: 0.1
 predict: 1
 numTrainNegatives: 1
 numTestNegatives: 10
-predicate: '<http://www.wikidata.org/prop/direct/P3373>'
+predicate: 'http://www.wikidata.org/prop/direct/P3373'
 
 #Embedding parameters
 embedding_model_name: 'TransE'

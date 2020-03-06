@@ -44,6 +44,9 @@ class NTriplesReader(Reader):
 		# TODO: should work for any RDF format
 		rdf_graph.parse(self.file_path, format=file_extension)
 		for source, relation, target in rdf_graph:
+			source = str(source)
+			relation = str(relation)
+			target = str(target)
 			if(self.prob == 1.0 or random() < self.prob):
 				is_dataprop = target.startswith('"')
 				if source not in entities:
