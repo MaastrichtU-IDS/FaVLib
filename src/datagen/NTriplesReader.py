@@ -45,7 +45,8 @@ class NTriplesReader(Reader):
 		rdf_graph.parse(self.file_path, format=file_extension)
 		for source, relation, target in rdf_graph:
 			source = str(source)
-			relation = str(relation)
+			# TODO: REMOVE THIS TEMPORARY FIX
+			relation = "<" + str(relation) + ">"
 			target = str(target)
 			if(self.prob == 1.0 or random() < self.prob):
 				is_dataprop = target.startswith('"')
